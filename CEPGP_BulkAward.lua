@@ -30,11 +30,56 @@ local function CreateButton(parent)
   return button
 end
 
-function CEPGPBA_OnApplyChanges(text)
-  -- Split text into lines
-  local input
-  input = {}
+local function CreateMultilineEditBox(parent)
+  local backdrop = {
+    bgFile   = "Interface/BUTTONS/WHITE8X8",
+    edgeFile = "Interface/GLUES/Common/Glue-Tooltip-Border",
+    tile     = true,
+    edgeSize = 8,
+    tileSize = 8,
+    insets   = {
+      left   = 5,
+      right  = 5,
+      top    = 5,
+      bottom = 5,
+    },
+  }
 
+  local f        = CreateFrame("Frame", "$parent_MultilineEdit", parent)
+  f:SetSize(500, 300)
+  --f:SetPoint("CENTER")
+  f:SetFrameStrata("BACKGROUND")
+  f:SetBackdrop(backdrop)
+  f:SetBackdropColor(0, 0, 0)
+
+  f.SF = CreateFrame("ScrollFrame", "$parent_ScrollFrame", f, "UIPanelScrollFrameTemplate")
+  f.SF:SetPoint("TOPLEFT", f, 12, -30)
+  f.SF:SetPoint("BOTTOMRIGHT", f, -30, 10)
+
+  f.Text = CreateFrame("EditBox", "$parent_Edit", f)
+  f.Text:SetMultiLine(true)
+  f.Text:SetSize(500, 300)
+  f.Text:SetPoint("TOPLEFT", f.SF)
+  f.Text:SetPoint("BOTTOMRIGHT", f.SF)
+  f.Text:SetMaxLetters(99999)
+  f.Text:SetFontObject(GameFontNormal)
+  f.Text:SetAutoFocus(false) -- do not steal focus from the game
+  f.Text:SetScript("OnEscapePressed",
+      function(self)
+        self:ClearFocus()
+      end)
+  f.SF:SetScrollChild(f.Text)
+
+  return f
+end
+
+function CEPGPBA_OnApplyChanges(text)
+  if text == nil then
+    print("CEPGP_BA: Something went wrong, can't get the task text from the editbox")
+    return
+  end
+
+  -- Split text into lines
   for ln in string.gmatch(text, "[^\r\n]+") do
     local player, amount, msg
     player, amount, msg = string.match(ln, "(%a+),(-?%d+),(.*)")
@@ -60,33 +105,30 @@ function CEPGPBA_Initialise()
   titleText:SetText("CEPGP Bulk Operations: Mass Awards");
 
   local taskBox
-  taskBox = CreateFrame("ScrollFrame", "CEPGP_BA_Task", panel, "InputScrollFrameTemplate")
+  taskBox = CreateMultilineEditBox(panel)
   taskBox:SetPoint("TOPLEFT", titleText, "BOTTOMLEFT", 0, -10);
-  taskBox:SetSize(500, 300)
-
-  local taskBoxEditFrame
-  taskBoxEditFrame = taskBox.EditBox:GetParent();
-  taskBox.EditBox:SetPoint("BOTTOMRIGHT", taskBoxEditFrame, "BOTTOMRIGHT", 0, 0);
-  taskBox.EditBox:SetPoint("BOTTOMLEFT", taskBoxEditFrame, "BOTTOMLEFT", 0, 0);
-  taskBox.EditBox:SetPoint("TOPRIGHT", taskBoxEditFrame, "TOPRIGHT", 0, 0);
-  taskBox.EditBox:SetPoint("TOPLEFT", taskBoxEditFrame, "TOPLEFT", 0, 0);
-  taskBox.EditBox:SetFontObject("ChatFontNormal")
-  taskBox.EditBox:SetCursorPosition(0)
-  taskBox.EditBox.cursorOffset = 0
-  taskBox.EditBox:SetMaxLetters(20000)
-  taskBox.CharCount:Hide()
 
   -- Apply Button --
-  local button
-  button = CreateButton(panel)
-  button:SetPoint("TOPLEFT", taskBox, "BOTTOMLEFT", 0, -10)
-  button:SetWidth(150)
-  button:SetHeight(25)
-  button:SetText("Apply Changes")
-  button:SetScript("OnClick",
-      function()
-        CEPGPBA_OnApplyChanges(taskBox.EditBox:GetText())
-      end)
+  local okButton
+  okButton = CreateButton(panel)
+  okButton:SetPoint("TOPLEFT", taskBox, "BOTTOMLEFT", 0, -10)
+  okButton:SetWidth(150)
+  okButton:SetHeight(25)
+  okButton:SetText("Apply Changes")
+  okButton:SetScript("OnClick", function()
+    CEPGPBA_OnApplyChanges(taskBox.Text:GetText())
+  end)
+
+  local clearButton = CreateButton(panel)
+  clearButton:SetPoint("TOPLEFT", okButton, "TOPRIGHT", 10, 0)
+  clearButton:SetWidth(100)
+  clearButton:SetHeight(25)
+  clearButton:SetText("Clear")
+  clearButton:SetScript("OnClick", function()
+    taskBox.Text:SetText("")
+  end)
+
+  taskBox.Text:SetFocus()
 
   InterfaceOptions_AddCategory(panel);
 
