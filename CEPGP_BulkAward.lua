@@ -45,7 +45,7 @@ local function CreateMultilineEditBox(parent)
     },
   }
 
-  local f        = CreateFrame("Frame", "$parent_MultilineEdit", parent)
+  local f        = CreateFrame("Frame", "$parent_MultilineEdit", parent, BackdropTemplateMixin and "BackdropTemplate")
   f:SetSize(500, 300)
   --f:SetPoint("CENTER")
   f:SetFrameStrata("BACKGROUND")
