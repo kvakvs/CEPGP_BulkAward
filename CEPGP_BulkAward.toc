@@ -1,8 +1,8 @@
-## Interface: 11305
+## Interface: 20501
 ## Title: CEPGP_BulkAward
 ## Author: Kvakvs @ github.com/kvakvs/CEPGP_BulkAward
 ## Notes: Provides functionality to bulk modify EP from a name/value pairs list
-## Version: 1.0.1
+## Version: 1.0.3
 ## Dependencies: CEPGP
 ## DefaultState: enabled
 ## SavedVariables: 
