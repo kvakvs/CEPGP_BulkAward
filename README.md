@@ -4,9 +4,11 @@ This addon allows batch modification of EP (only! not GP) via a multi-line comma
 
 `Playername,value,message`
 eg:
-`Raider1,50,Bonus EP`
-`Raider2,-10,Mistakenly added EP`
-`Raider3,50,Bonus EP`
+```
+Raider1,50,Bonus EP
+Raider2,-10,Mistakenly added EP
+Raider3,50,Bonus EP
+```
 
 Each line will show as a separate entry in the EPGP Traffic window.
 
