@@ -82,7 +82,10 @@ function CEPGPBA_OnApplyChanges(text)
   -- Split text into lines
   for ln in string.gmatch(text, "[^\r\n]+") do
     local player, amount, msg
-    player, amount, msg = string.match(ln, "(%a+),(-?%d+),(.*)")
+    local split = CEPGP_split(ln,",")
+    player = split[1]
+    amount = split[2]
+    msg = split[3]
     do
       CEPGP_addEP(player, tonumber(amount), msg)
     end
